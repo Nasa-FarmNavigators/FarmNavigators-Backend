@@ -28,7 +28,10 @@ npm init -y
 ```bash
 npm install @nestjs/core @nestjs/common @nestjs/platform-fastify @nestjs/jwt @nestjs/passport @nestjs/config
 npm install @prisma/client bcryptjs jsonwebtoken passport passport-jwt passport-local
+npm list @nestjs/platform-fastify
 npm install class-validator class-transformer
+npm install @nestjs/swagger swagger-ui-express
+npm install @nestjs/platform-express
 ```
 
 ### 3. Instalar dependências de desenvolvimento
