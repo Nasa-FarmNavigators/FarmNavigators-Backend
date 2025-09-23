@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      Role      @default(FARMER)
+  farms     Farm[]  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Farm {
+  id        String    @id @default(cuid())
+  name      String
+  latitude  Float
+  longitude Float
+  area      Float     //nao esquecer, calculo em hectares
+  corpType  String
+  owner     User      @relation(fields: [ownerId], references: [id])
+  ownerId   String
+  alerts    Alert[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("farms")
+}
+
+model Alert {
+  id        String    @id @default(cuid())
+  type        AlertType
+  severity    Severity
+  message     String
+  isActive    Boolean   @default(true)
+  farm        Farm      @relation(fields: [farmId], references: [id])
+  farmId      String
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+
+  @@map("alerts")
+}
+
+enum Role {
+  ADMIN
+  FARMER
+  ANALYST
+}
+
+enum AlertType {
+  DROUGHT
+  FLOOD
+  PEST
+  DISEASE
+  WEATHER
+  SOIL
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
