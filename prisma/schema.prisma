@@ -26,7 +26,7 @@ model Farm {
   latitude  Float
   longitude Float
   area      Float     //nao esquecer, calculo em hectares
-  corpType  String
+  cropType  String
   owner     User      @relation(fields: [ownerId], references: [id])
   ownerId   String
   alerts    Alert[]
