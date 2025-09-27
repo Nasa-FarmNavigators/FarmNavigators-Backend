@@ -8,7 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,7 +33,11 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user (Admin only)' })
-  @ApiResponse({ status: 201, description: 'User created successfully', type: UserResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+    type: UserResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 403, description: 'Admin access required' })
   async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
@@ -37,7 +46,11 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users (Admin only)' })
-  @ApiResponse({ status: 200, description: 'List of all users', type: [UserResponseDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all users',
+    type: [UserResponseDto],
+  })
   @ApiResponse({ status: 403, description: 'Admin access required' })
   async findAll(): Promise<UserResponseDto[]> {
     return this.usersService.findAll();
@@ -45,7 +58,11 @@ export class UsersController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID (Admin only)' })
-  @ApiResponse({ status: 200, description: 'User found', type: UserResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: UserResponseDto,
+  })
   @ApiResponse({ status: 403, description: 'Admin access required' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
@@ -54,7 +71,11 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update user (Admin only)' })
-  @ApiResponse({ status: 200, description: 'User updated successfully', type: UserResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    type: UserResponseDto,
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 403, description: 'Admin access required' })
   @ApiResponse({ status: 404, description: 'User not found' })
