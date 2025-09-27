@@ -8,44 +8,44 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
+  id        String   @id @default(cuid())
+  email     String   @unique
   password  String
   name      String
-  role      Role      @default(FARMER)
-  farms     Farm[]  
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  role      Role     @default(FARMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  farms     Farm[]
 
   @@map("users")
 }
 
 model Farm {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   latitude  Float
   longitude Float
-  area      Float     //nao esquecer, calculo em hectares
-  cropType  String
-  owner     User      @relation(fields: [ownerId], references: [id])
+  area      Float
   ownerId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cropType  String
   alerts    Alert[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  owner     User     @relation(fields: [ownerId], references: [id])
 
   @@map("farms")
 }
 
 model Alert {
-  id        String    @id @default(cuid())
-  type        AlertType
-  severity    Severity
-  message     String
-  isActive    Boolean   @default(true)
-  farm        Farm      @relation(fields: [farmId], references: [id])
-  farmId      String
-  createdAt   DateTime  @default(now())
-  resolvedAt  DateTime?
+  id         String    @id @default(cuid())
+  type       AlertType
+  severity   Severity
+  message    String
+  isActive   Boolean   @default(true)
+  farmId     String
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  farm       Farm      @relation(fields: [farmId], references: [id])
 
   @@map("alerts")
 }
