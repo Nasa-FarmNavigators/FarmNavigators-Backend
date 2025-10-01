@@ -1,0 +1,7 @@
+name: Test Secrets
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Chave da org = ${{ secrets.API_KEY_TEST }}"
