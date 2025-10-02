@@ -4,15 +4,23 @@ import { Role } from '@prisma/client';
 export class UserResponseDto {
   @ApiProperty({
     description: 'ID único do usuário',
-    example: 'cm1k2x3y4z5a6b7c8d9e0f1g',
+    example: 1,
   })
-  id: string;
+  id: number;
 
   @ApiProperty({
     description: 'Email do usuário',
     example: 'joao@fazenda.com',
+    required: false,
   })
-  email: string;
+  email?: string;
+
+  @ApiProperty({
+    description: 'Telefone do usuário',
+    example: '+244923456789',
+    required: false,
+  })
+  phone?: string;
 
   @ApiProperty({
     description: 'Nome completo do usuário',
@@ -26,6 +34,26 @@ export class UserResponseDto {
     example: 'FARMER',
   })
   role: Role;
+
+  @ApiProperty({
+    description: 'Idioma preferido',
+    example: 'pt',
+  })
+  language: string;
+
+  @ApiProperty({
+    description: 'Fuso horário',
+    example: 'Africa/Luanda',
+    required: false,
+  })
+  timezone?: string;
+
+  @ApiProperty({
+    description: 'ID da organização',
+    example: 1,
+    required: false,
+  })
+  organizationId?: number;
 
   @ApiProperty({
     description: 'Data de criação',

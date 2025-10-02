@@ -7,62 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role     @default(FARMER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  farms     Farm[]
-
-  @@map("users")
-}
-
-model Farm {
-  id        String   @id @default(cuid())
-  name      String
-  latitude  Float
-  longitude Float
-  area      Float
-  ownerId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cropType  String
-  alerts    Alert[]
-  owner     User     @relation(fields: [ownerId], references: [id])
-
-  @@map("farms")
-}
-
-model Alert {
-  id         String    @id @default(cuid())
-  type       AlertType
-  severity   Severity
-  message    String
-  isActive   Boolean   @default(true)
-  farmId     String
-  createdAt  DateTime  @default(now())
-  resolvedAt DateTime?
-  farm       Farm      @relation(fields: [farmId], references: [id])
-
-  @@map("alerts")
-}
-
 enum Role {
-  ADMIN
   FARMER
-  ANALYST
+  TECHNICIAN
+  NGO
+  GOVERNMENT
+  ADMIN
+}
+
+enum PlantingStatus {
+  PLANTED
+  HARVESTED
+  CANCELLED
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  READ
+}
+
+enum Channel {
+  PUSH
+  USSD
+  SMS
+  EMAIL
+}
+
+enum DevicePlatform {
+  ANDROID
+  IOS
+  WEB
 }
 
 enum AlertType {
+  FIRE
   DROUGHT
   FLOOD
   PEST
-  DISEASE
-  WEATHER
-  SOIL
+  OTHER
 }
 
 enum Severity {
@@ -70,4 +55,344 @@ enum Severity {
   MEDIUM
   HIGH
   CRITICAL
+}
+
+model User {
+  id               Int                @id @default(autoincrement())
+  name             String
+  email            String?            @unique
+  phone            String?            @unique
+  password         String?            // optional (USSD users might not have password)
+  role             Role               @default(FARMER)
+  language         String             @default("pt")
+  timezone         String?            @default("Africa/Luanda")
+  organization     Organization?      @relation(fields: [organizationId], references: [id])
+  organizationId   Int?
+  farms            Farm[] 
+  devices          Device[]
+  notifications    Notification[]
+  videoEngagement  VideoEngagement[]
+  auditLogs        AuditLog[]         @relation("UserAuditLogs")
+  settings         Setting?
+  uploadedVideos   VideoContent[]     @relation("UserUploadedVideos")
+  acknowledgedAlerts Alert[]          @relation("UserAcknowledgedAlerts")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@map("users")
+}
+
+model Organization {
+  id           Int      @id @default(autoincrement())
+  name         String
+  type         String?
+  country      String?
+  contactEmail String?
+  users        User[]
+  farms        Farm[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("organizations")
+}
+
+model Farm {
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  owner                  User                     @relation(fields: [ownerId], references: [id])
+  ownerId                Int
+  organization           Organization?            @relation(fields: [organizationId], references: [id])
+  organizationId         Int?
+  province               String?
+  municipality           String?
+  centroidLat            Float?
+  centroidLon            Float?
+  boundary               Json?                    // GeoJSON Polygon / MultiPolygon (EPSG:4326)
+  areaHa                 Float?                   // hectares
+  soilType               String?
+  fields                 Field[]
+  plantings              PlantingEvent[]
+  alerts                 Alert[]
+  satelliteObservations  SatelliteObservation[]
+  weatherObservations    WeatherObservation[]
+  recommendations        Recommendation[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  @@index([ownerId])
+  @@index([centroidLat, centroidLon])
+  @@map("farms")
+}
+
+model Field {
+  id                     Int                      @id @default(autoincrement())
+  farm                   Farm                     @relation(fields: [farmId], references: [id])
+  farmId                 Int
+  name                   String?
+  centroidLat            Float?
+  centroidLon            Float?
+  boundary               Json?                    // GeoJSON
+  areaHa                 Float?
+  plantings              PlantingEvent[]
+  satelliteObservations  SatelliteObservation[]
+  weatherObservations    WeatherObservation[]
+  recommendations        Recommendation[]
+  mlModelResults         MLModelResult[]
+  alerts                 Alert[]
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  @@index([farmId])
+  @@map("fields")
+}
+
+model CropType {
+  id               Int              @id @default(autoincrement())
+  name             String
+  scientificName   String?
+  description      String?
+  typicalStartMonth Int?
+  typicalEndMonth   Int?
+  plantings        PlantingEvent[]
+  createdAt        DateTime         @default(now())
+
+  @@map("crop_types")
+}
+
+model PlantingEvent {
+  id             Int            @id @default(autoincrement())
+  field          Field          @relation(fields: [fieldId], references: [id])
+  fieldId        Int
+  farm          Farm           @relation(fields: [farmId], references: [id])
+  farmId        Int
+  crop           CropType       @relation(fields: [cropId], references: [id])
+  cropId         Int
+  plantedAt      DateTime
+  expectedYieldKg Float?
+  actualYieldKg   Float?
+  areaHa         Float?
+  status         PlantingStatus @default(PLANTED)
+  notes          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([fieldId])
+  @@index([farmId])
+  @@index([plantedAt])
+  @@map("planting_events")
+}
+
+model SatelliteObservation {
+  id           Int      @id @default(autoincrement())
+  field        Field?   @relation(fields: [fieldId], references: [id])
+  fieldId      Int?
+  farm         Farm?    @relation(fields: [farmId], references: [id])
+  farmId       Int?
+  timestamp    DateTime
+  source       String
+  bbox         Json?    // GeoJSON bbox or polygon
+  centroidLat  Float?
+  centroidLon  Float?
+  ndvi         Float?   // expected range -1 .. +1
+  evi          Float?
+  soilMoisture Float?
+  rawUrl       String?  // link to GeoTIFF
+  metrics      Json?    // other bands / QA flags
+  createdAt    DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([fieldId])
+  @@index([farmId])
+  @@map("satellite_observations")
+}
+
+model WeatherObservation {
+  id              Int      @id @default(autoincrement())
+  field           Field?   @relation(fields: [fieldId], references: [id])
+  fieldId         Int?
+  farm            Farm?    @relation(fields: [farmId], references: [id])
+  farmId          Int?
+  timestamp       DateTime
+  source          String
+  precipitationMm Float?
+  temperatureC    Float?
+  humidity        Float?
+  windSpeedMps    Float?
+  raw             Json?
+  createdAt       DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([fieldId])
+  @@index([farmId])
+  @@map("weather_observations")
+}
+
+model Recommendation {
+  id            Int      @id @default(autoincrement())
+  field         Field?   @relation(fields: [fieldId], references: [id])
+  fieldId       Int?
+  farm          Farm?    @relation(fields: [farmId], references: [id])
+  farmId        Int?
+  createdBy     String?  // "system" or user id
+  createdAt     DateTime @default(now())
+  type          String   // e.g., "PLANTING", "IRRIGATION", "PEST"
+  title         String
+  body          String
+  score         Float?
+  actionSuggested Json?
+  metadata      Json?
+  isActioned    Boolean  @default(false)
+
+  @@index([farmId])
+  @@index([fieldId])
+  @@map("recommendations")
+}
+
+model MLModelResult {
+  id           Int      @id @default(autoincrement())
+  modelName    String
+  modelVersion String?
+  input        Json
+  output       Json
+  field        Field?   @relation(fields: [fieldId], references: [id])
+  fieldId      Int?
+  createdAt    DateTime @default(now())
+
+  @@index([fieldId])
+  @@map("ml_model_results")
+}
+
+model Device {
+  id         Int            @id @default(autoincrement())
+  user       User           @relation(fields: [userId], references: [id])
+  userId     Int
+  platform   DevicePlatform
+  pushToken  String         @unique
+  lastSeen   DateTime?
+  isActive   Boolean        @default(true)
+  createdAt  DateTime       @default(now())
+
+  @@index([userId])
+  @@map("devices")
+}
+
+model Notification {
+  id          Int                 @id @default(autoincrement())
+  user        User                @relation(fields: [userId], references: [id])
+  userId      Int
+  title       String
+  body        String
+  data        Json?
+  channel     Channel             @default(PUSH)
+  status      NotificationStatus  @default(PENDING)
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  readAt      DateTime?
+  attempts    Int                 @default(0)
+  createdAt   DateTime            @default(now())
+
+  @@index([userId, status])
+  @@map("notifications")
+}
+
+model USSDLog {
+  id        Int      @id @default(autoincrement())
+  phone     String
+  request   String   @db.Text
+  response  String   @db.Text
+  status    String
+  createdAt DateTime @default(now())
+
+  @@map("ussd_logs")
+}
+
+model VideoContent {
+  id            Int               @id @default(autoincrement())
+  title         String
+  description   String?
+  language      String            @default("pt")
+  url           String
+  thumbnail     String?
+  durationSec   Int?
+  tags          Json?
+  uploadedBy    User?             @relation("UserUploadedVideos", fields: [uploadedById], references: [id])
+  uploadedById  Int?
+  createdAt     DateTime          @default(now())
+  engagements   VideoEngagement[]
+
+  @@map("video_content")
+}
+
+model VideoEngagement {
+  id           Int       @id @default(autoincrement())
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       Int?
+  video        VideoContent @relation(fields: [videoId], references: [id])
+  videoId      Int
+  watchedAt    DateTime  @default(now())
+  percentWatched Int?
+
+  @@index([userId])
+  @@index([videoId])
+  @@map("video_engagements")
+}
+
+model Alert {
+  id             Int       @id @default(autoincrement())
+  farm           Farm?     @relation(fields: [farmId], references: [id])
+  farmId         Int?
+  field          Field?    @relation(fields: [fieldId], references: [id])
+  fieldId        Int?
+  type           AlertType
+  severity       Severity
+  message        String
+  source         String?
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  acknowledgedBy User?     @relation("UserAcknowledgedAlerts", fields: [ackById], references: [id])
+  ackById        Int?
+  acknowledgedAt DateTime?
+  metadata       Json?
+
+  @@index([type, severity])
+  @@index([farmId])
+  @@index([fieldId])
+  @@index([ackById])
+  @@map("alerts")
+}
+
+model DataSource {
+  id         Int      @id @default(autoincrement())
+  name       String
+  provider   String?
+  description String?
+  endpoint   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@map("data_sources")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  user      User?    @relation("UserAuditLogs", fields: [userId], references: [id])
+  userId    Int?
+  action    String
+  resource  String
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model Setting {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int      @unique
+  preferences  Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("settings")
 }

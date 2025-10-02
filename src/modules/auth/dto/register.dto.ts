@@ -5,6 +5,8 @@ import {
   MinLength,
   IsEnum,
   IsOptional,
+  IsPhoneNumber,
+  IsInt,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 
@@ -12,18 +14,31 @@ export class RegisterDto {
   @ApiProperty({
     description: 'Email do usuário',
     example: 'joao@fazenda.com',
+    required: false,
   })
   @IsEmail({}, { message: 'Email deve ter um formato válido' })
-  email: string;
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({
+    description: 'Telefone do usuário',
+    example: '+244923456789',
+    required: false,
+  })
+  @IsString({ message: 'Telefone deve ser uma string' })
+  @IsOptional()
+  phone?: string;
 
   @ApiProperty({
     description: 'Senha do usuário',
     example: 'MinhaSenh@123',
     minLength: 8,
+    required: false,
   })
   @IsString({ message: 'Senha deve ser uma string' })
   @MinLength(8, { message: 'Senha deve ter pelo menos 8 caracteres' })
-  password: string;
+  @IsOptional()
+  password?: string;
 
   @ApiProperty({
     description: 'Nome completo do usuário',
@@ -39,7 +54,36 @@ export class RegisterDto {
     example: 'FARMER',
     required: false,
   })
-  @IsEnum(Role, { message: 'Role deve ser ADMIN, FARMER ou ANALYST' })
+  @IsEnum(Role, {
+    message: 'Role deve ser FARMER, TECHNICIAN, NGO, GOVERNMENT ou ADMIN',
+  })
   @IsOptional()
   role?: Role;
+
+  @ApiProperty({
+    description: 'Idioma preferido',
+    example: 'pt',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  language?: string;
+
+  @ApiProperty({
+    description: 'Fuso horário',
+    example: 'Africa/Luanda',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  timezone?: string;
+
+  @ApiProperty({
+    description: 'ID da organização',
+    example: 1,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  organizationId?: number;
 }

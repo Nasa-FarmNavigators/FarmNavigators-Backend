@@ -13,26 +13,51 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: createUserDto.email },
-    });
-
-    if (existingUser) {
-      throw new ConflictException('Email já está em uso');
+    // Verificar se email já existe (se fornecido)
+    if (createUserDto.email) {
+      const existingUserByEmail = await this.prisma.user.findUnique({
+        where: { email: createUserDto.email },
+      });
+      if (existingUserByEmail) {
+        throw new ConflictException('Email já está em uso');
+      }
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
+    // Verificar se phone já existe (se fornecido)
+    if (createUserDto.phone) {
+      const existingUserByPhone = await this.prisma.user.findUnique({
+        where: { phone: createUserDto.phone },
+      });
+      if (existingUserByPhone) {
+        throw new ConflictException('Telefone já está em uso');
+      }
+    }
+
+    // Hash da senha se fornecida
+    const userData = { ...createUserDto };
+    if (userData.password) {
+      userData.password = await bcrypt.hash(userData.password, 12);
+    }
+
+    // Definir valores padrão
+    if (!userData.language) {
+      userData.language = 'pt';
+    }
+    if (!userData.timezone) {
+      userData.timezone = 'Africa/Luanda';
+    }
 
     const user = await this.prisma.user.create({
-      data: {
-        ...createUserDto,
-        password: hashedPassword,
-      },
+      data: userData,
       select: {
         id: true,
         email: true,
+        phone: true,
         name: true,
         role: true,
+        language: true,
+        timezone: true,
+        organizationId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -46,33 +71,36 @@ export class UsersService {
       select: {
         id: true,
         email: true,
+        phone: true,
         name: true,
         role: true,
+        language: true,
+        timezone: true,
+        organizationId: true,
         createdAt: true,
         updatedAt: true,
       },
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+          },
+        },
         farms: {
           select: {
             id: true,
             name: true,
-            latitude: true,
-            longitude: true,
-            area: true,
-            cropType: true,
-            createdAt: true,
+            areaHa: true,
+            centroidLat: true,
+            centroidLon: true,
           },
         },
       },
@@ -91,13 +119,39 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async findByPhone(phone: string) {
+    return this.prisma.user.findUnique({
+      where: { phone },
+    });
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
 
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
+    }
+
+    // Verificar se email já existe (se sendo alterado)
+    if (updateUserDto.email && updateUserDto.email !== user.email) {
+      const existingUserByEmail = await this.prisma.user.findUnique({
+        where: { email: updateUserDto.email },
+      });
+      if (existingUserByEmail) {
+        throw new ConflictException('Email já está em uso');
+      }
+    }
+
+    // Verificar se phone já existe (se sendo alterado)
+    if (updateUserDto.phone && updateUserDto.phone !== user.phone) {
+      const existingUserByPhone = await this.prisma.user.findUnique({
+        where: { phone: updateUserDto.phone },
+      });
+      if (existingUserByPhone) {
+        throw new ConflictException('Telefone já está em uso');
+      }
     }
 
     // Se a senha foi fornecida, fazer hash
@@ -112,8 +166,12 @@ export class UsersService {
       select: {
         id: true,
         email: true,
+        phone: true,
         name: true,
         role: true,
+        language: true,
+        timezone: true,
+        organizationId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -122,7 +180,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });

@@ -1,5 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, MinLength, Min, Max } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  IsNumber,
+  MinLength,
+  Min,
+  Max,
+  IsOptional,
+  IsInt,
+} from 'class-validator';
 
 export class CreateFarmDto {
   @ApiProperty({
@@ -12,8 +20,32 @@ export class CreateFarmDto {
   @MinLength(2, { message: 'Nome deve ter pelo menos 2 caracteres' })
   name: string;
 
+  @ApiPropertyOptional({
+    description: 'ID da organização (NGO, cooperativa, etc.)',
+    example: 1,
+  })
+  @IsOptional()
+  @IsInt({ message: 'ID da organização deve ser um número inteiro' })
+  organizationId?: number;
+
+  @ApiPropertyOptional({
+    description: 'Província',
+    example: 'Luanda',
+  })
+  @IsOptional()
+  @IsString({ message: 'Província deve ser uma string' })
+  province?: string;
+
+  @ApiPropertyOptional({
+    description: 'Município',
+    example: 'Viana',
+  })
+  @IsOptional()
+  @IsString({ message: 'Município deve ser uma string' })
+  municipality?: string;
+
   @ApiProperty({
-    description: 'Latitude da fazenda',
+    description: 'Latitude do centroide da fazenda',
     example: -15.7942,
     minimum: -90,
     maximum: 90,
@@ -21,10 +53,10 @@ export class CreateFarmDto {
   @IsNumber({}, { message: 'Latitude deve ser um número' })
   @Min(-90, { message: 'Latitude deve estar entre -90 e 90' })
   @Max(90, { message: 'Latitude deve estar entre -90 e 90' })
-  latitude: number;
+  centroidLat: number;
 
   @ApiProperty({
-    description: 'Longitude da fazenda',
+    description: 'Longitude do centroide da fazenda',
     example: -47.8822,
     minimum: -180,
     maximum: 180,
@@ -32,7 +64,25 @@ export class CreateFarmDto {
   @IsNumber({}, { message: 'Longitude deve ser um número' })
   @Min(-180, { message: 'Longitude deve estar entre -180 e 180' })
   @Max(180, { message: 'Longitude deve estar entre -180 e 180' })
-  longitude: number;
+  centroidLon: number;
+
+  @ApiPropertyOptional({
+    description: 'Boundary da fazenda em formato GeoJSON',
+    example: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [-47.8822, -15.7942],
+          [-47.8822, -15.7943],
+          [-47.8821, -15.7943],
+          [-47.8821, -15.7942],
+          [-47.8822, -15.7942],
+        ],
+      ],
+    },
+  })
+  @IsOptional()
+  boundary?: any;
 
   @ApiProperty({
     description: 'Área da fazenda em hectares',
@@ -41,14 +91,13 @@ export class CreateFarmDto {
   })
   @IsNumber({}, { message: 'Área deve ser um número' })
   @Min(0.1, { message: 'Área deve ser maior que 0' })
-  area: number;
+  areaHa: number;
 
-  @ApiProperty({
-    description: 'Tipo de cultura plantada',
-    example: 'Soja',
-    minLength: 2,
+  @ApiPropertyOptional({
+    description: 'Tipo de solo',
+    example: 'Argiloso',
   })
-  @IsString({ message: 'Tipo de cultura deve ser uma string' })
-  @MinLength(2, { message: 'Tipo de cultura deve ter pelo menos 2 caracteres' })
-  cropType: string;
+  @IsOptional()
+  @IsString({ message: 'Tipo de solo deve ser uma string' })
+  soilType?: string;
 }

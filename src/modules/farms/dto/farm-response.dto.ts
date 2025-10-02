@@ -1,11 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FarmResponseDto {
   @ApiProperty({
     description: 'ID único da fazenda',
-    example: 'cm1k2x3y4z5a6b7c8d9e0f1h',
+    example: 1,
   })
-  id: string;
+  id: number;
 
   @ApiProperty({
     description: 'Nome da fazenda',
@@ -14,47 +14,84 @@ export class FarmResponseDto {
   name: string;
 
   @ApiProperty({
-    description: 'Latitude da fazenda',
+    description: 'ID do proprietário',
+    example: 1,
+  })
+  ownerId: number;
+
+  @ApiPropertyOptional({
+    description: 'ID da organização',
+    example: 1,
+  })
+  organizationId?: number;
+
+  @ApiPropertyOptional({
+    description: 'Província',
+    example: 'Luanda',
+  })
+  province?: string;
+
+  @ApiPropertyOptional({
+    description: 'Município',
+    example: 'Viana',
+  })
+  municipality?: string;
+
+  @ApiPropertyOptional({
+    description: 'Latitude do centroide',
     example: -15.7942,
   })
-  latitude: number;
+  centroidLat?: number;
 
-  @ApiProperty({
-    description: 'Longitude da fazenda',
+  @ApiPropertyOptional({
+    description: 'Longitude do centroide',
     example: -47.8822,
   })
-  longitude: number;
+  centroidLon?: number;
 
-  @ApiProperty({
-    description: 'Área da fazenda em hectares',
+  @ApiPropertyOptional({
+    description: 'Boundary GeoJSON',
+    example: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [-47.8822, -15.7942],
+          [-47.8822, -15.7943],
+          [-47.8821, -15.7943],
+          [-47.8821, -15.7942],
+          [-47.8822, -15.7942],
+        ],
+      ],
+    },
+  })
+  boundary?: any;
+
+  @ApiPropertyOptional({
+    description: 'Área em hectares',
     example: 150.5,
   })
-  area: number;
+  areaHa?: number;
 
-  @ApiProperty({
-    description: 'Tipo de cultura plantada',
-    example: 'Soja',
+  @ApiPropertyOptional({
+    description: 'Tipo de solo',
+    example: 'Argiloso',
   })
-  cropType: string;
-
-  @ApiProperty({
-    description: 'ID do proprietário',
-    example: 'cm1k2x3y4z5a6b7c8d9e0f1g',
-  })
-  ownerId: string;
+  soilType?: string;
 
   @ApiProperty({
     description: 'Dados do proprietário',
     example: {
-      id: 'cm1k2x3y4z5a6b7c8d9e0f1g',
+      id: 1,
       name: 'João Silva',
       email: 'joao@fazenda.com',
+      role: 'FARMER',
     },
   })
   owner?: {
-    id: string;
+    id: number;
     name: string;
-    email: string;
+    email?: string;
+    role: string;
   };
 
   @ApiProperty({

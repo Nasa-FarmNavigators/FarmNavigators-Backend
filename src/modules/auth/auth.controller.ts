@@ -3,6 +3,8 @@ import {
   Post,
   Body,
   Get,
+  Patch,
+  Delete,
   UseGuards,
   Request,
   HttpCode,
@@ -17,10 +19,11 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@ApiTags('Authentication')
+@ApiTags('Authentication & Users')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -192,6 +195,82 @@ export class AuthController {
       success: true,
       message: 'Perfil encontrado',
       data: profile,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Atualizar perfil do usuário',
+    description: 'Permite ao usuário autenticado atualizar seu próprio perfil',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil atualizado com sucesso',
+    example: {
+      success: true,
+      message: 'Perfil atualizado com sucesso',
+      data: {
+        id: 1,
+        email: 'joao@fazenda.com',
+        phone: '+244923456789',
+        name: 'João Silva Santos',
+        role: 'FARMER',
+        language: 'pt',
+        timezone: 'Africa/Luanda',
+        updatedAt: '2025-10-02T12:30:10.123Z',
+      },
+      timestamp: '2025-10-02T12:30:10.123Z',
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token inválido ou ausente',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos',
+  })
+  async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    const updatedProfile = await this.authService.updateProfile(
+      req.user.id,
+      updateUserDto,
+    );
+    return {
+      success: true,
+      message: 'Perfil atualizado com sucesso',
+      data: updatedProfile,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Delete('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Excluir conta do usuário',
+    description: 'Permite ao usuário autenticado excluir sua própria conta',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Conta excluída com sucesso',
+    example: {
+      success: true,
+      message: 'Sua conta foi excluída com sucesso',
+      timestamp: '2025-10-02T12:30:10.123Z',
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token inválido ou ausente',
+  })
+  async deleteProfile(@Request() req) {
+    await this.authService.deleteProfile(req.user.id);
+    return {
+      success: true,
+      message: 'Sua conta foi excluída com sucesso',
       timestamp: new Date().toISOString(),
     };
   }
