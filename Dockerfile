@@ -1,7 +1,7 @@
 # -----------------------------
 # STAGE 1: Build
 # -----------------------------
-FROM node:18 AS build
+FROM node:20 AS build
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ RUN npm run build
 # -----------------------------
 # STAGE 2: Runtime
 # -----------------------------
-FROM node:18-slim
+FROM node:20-slim
 
 WORKDIR /app
 
