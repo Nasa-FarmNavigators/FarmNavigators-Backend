@@ -21,15 +21,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-        working-directory: ./FarmNavigators-Backend
 
       - name: Run build
         run: npm run build
-        working-directory: ./FarmNavigators-Backend
 
       - name: Run tests
         run: npm run test -- --passWithNoTests
-        working-directory: ./FarmNavigators-Backend
 
   docker:
     needs: build
