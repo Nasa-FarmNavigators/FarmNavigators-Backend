@@ -41,7 +41,7 @@ export class OrganizationsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const organization = await this.prisma.organization.findUnique({
       where: { id },
       include: {
@@ -80,7 +80,7 @@ export class OrganizationsService {
     return organization;
   }
 
-  async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
+  async update(id: string, updateOrganizationDto: UpdateOrganizationDto) {
     const organization = await this.prisma.organization.findUnique({
       where: { id },
     });
@@ -103,7 +103,7 @@ export class OrganizationsService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const organization = await this.prisma.organization.findUnique({
       where: { id },
       include: {
@@ -132,7 +132,7 @@ export class OrganizationsService {
     });
   }
 
-  async getStatistics(id: number) {
+  async getStatistics(id: string) {
     const organization = await this.prisma.organization.findUnique({
       where: { id },
       include: {

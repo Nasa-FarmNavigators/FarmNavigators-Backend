@@ -6,7 +6,6 @@ import {
   Min,
   Max,
   IsOptional,
-  IsInt,
 } from 'class-validator';
 
 export class CreateFarmDto {
@@ -22,11 +21,11 @@ export class CreateFarmDto {
 
   @ApiPropertyOptional({
     description: 'ID da organização (NGO, cooperativa, etc.)',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
   @IsOptional()
-  @IsInt({ message: 'ID da organização deve ser um número inteiro' })
-  organizationId?: number;
+  @IsString({ message: 'ID da organização deve ser uma string' })
+  organizationId?: string;
 
   @ApiPropertyOptional({
     description: 'Província',

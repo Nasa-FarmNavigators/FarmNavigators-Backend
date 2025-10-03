@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -74,7 +73,7 @@ export class CropTypesController {
     status: 404,
     description: 'Tipo de cultura não encontrado',
   })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.cropTypesService.findOne(id);
   }
 
@@ -94,7 +93,7 @@ export class CropTypesController {
     description: 'Tipo de cultura não encontrado',
   })
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateCropTypeDto: UpdateCropTypeDto,
   ) {
     return this.cropTypesService.update(id, updateCropTypeDto);
@@ -114,7 +113,7 @@ export class CropTypesController {
     status: 404,
     description: 'Tipo de cultura não encontrado',
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') id: string) {
     return this.cropTypesService.remove(id);
   }
 }

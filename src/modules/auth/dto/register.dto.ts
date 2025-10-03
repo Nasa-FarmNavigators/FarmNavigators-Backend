@@ -5,8 +5,6 @@ import {
   MinLength,
   IsEnum,
   IsOptional,
-  IsPhoneNumber,
-  IsInt,
 } from 'class-validator';
 import { Role } from '@prisma/client';
 
@@ -80,10 +78,10 @@ export class RegisterDto {
 
   @ApiProperty({
     description: 'ID da organização',
-    example: 1,
+    example: 'clxyz123abc456def789',
     required: false,
   })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  organizationId?: number;
+  organizationId?: string;
 }

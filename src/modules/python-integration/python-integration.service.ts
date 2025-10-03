@@ -302,7 +302,7 @@ export class PythonIntegrationService {
   }
 
   private async saveRecommendations(
-    farmId: number,
+    farmId: string,
     recommendations: any[],
   ): Promise<void> {
     try {

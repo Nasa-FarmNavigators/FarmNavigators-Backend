@@ -28,7 +28,7 @@ export class RecommendationsService {
     });
   }
 
-  async findAll(farmId?: number, fieldId?: number) {
+  async findAll(farmId?: string, fieldId?: string) {
     const where: any = {};
     if (farmId) where.farmId = farmId;
     if (fieldId) where.fieldId = fieldId;
@@ -56,7 +56,7 @@ export class RecommendationsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const recommendation = await this.prisma.recommendation.findUnique({
       where: { id },
       include: {
@@ -100,7 +100,7 @@ export class RecommendationsService {
     return recommendation;
   }
 
-  async update(id: number, updateRecommendationDto: UpdateRecommendationDto) {
+  async update(id: string, updateRecommendationDto: UpdateRecommendationDto) {
     const recommendation = await this.prisma.recommendation.findUnique({
       where: { id },
     });
@@ -130,7 +130,7 @@ export class RecommendationsService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const recommendation = await this.prisma.recommendation.findUnique({
       where: { id },
     });
@@ -146,7 +146,7 @@ export class RecommendationsService {
     return { message: 'Recomendação removida com sucesso' };
   }
 
-  async markAsActioned(id: number) {
+  async markAsActioned(id: string) {
     const recommendation = await this.prisma.recommendation.findUnique({
       where: { id },
     });

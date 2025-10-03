@@ -27,7 +27,7 @@ async function bootstrap() {
     ignoreGlobalPrefix: false,
   });
 
-  SwaggerModule.setup('docs', app, documentation, {
+  SwaggerModule.setup('api/docs', app, documentation, {
     swaggerOptions: {
       persistAuthorization: true,
     },

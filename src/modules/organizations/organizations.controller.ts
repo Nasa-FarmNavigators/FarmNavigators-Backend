@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -66,9 +65,7 @@ export class OrganizationsController {
     type: OrganizationResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Organization not found' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<OrganizationResponseDto> {
+  async findOne(@Param('id') id: string): Promise<OrganizationResponseDto> {
     return this.organizationsService.findOne(id);
   }
 
@@ -76,7 +73,7 @@ export class OrganizationsController {
   @ApiOperation({ summary: 'Get organization statistics' })
   @ApiResponse({ status: 200, description: 'Organization statistics' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
-  async getStatistics(@Param('id', ParseIntPipe) id: number) {
+  async getStatistics(@Param('id') id: string) {
     return this.organizationsService.getStatistics(id);
   }
 
@@ -92,7 +89,7 @@ export class OrganizationsController {
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Organization not found' })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto,
   ): Promise<OrganizationResponseDto> {
     return this.organizationsService.update(id, updateOrganizationDto);
@@ -110,9 +107,7 @@ export class OrganizationsController {
     description: 'Admin access required or organization has dependencies',
   })
   @ApiResponse({ status: 404, description: 'Organization not found' })
-  async remove(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<{ message: string }> {
+  async remove(@Param('id') id: string): Promise<{ message: string }> {
     await this.organizationsService.remove(id);
     return { message: 'Organization deleted successfully' };
   }

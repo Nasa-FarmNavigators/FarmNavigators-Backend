@@ -28,7 +28,7 @@ export class CropTypesService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const cropType = await this.prisma.cropType.findUnique({
       where: { id },
       include: {
@@ -59,7 +59,7 @@ export class CropTypesService {
     return cropType;
   }
 
-  async update(id: number, updateCropTypeDto: UpdateCropTypeDto) {
+  async update(id: string, updateCropTypeDto: UpdateCropTypeDto) {
     const cropType = await this.prisma.cropType.findUnique({
       where: { id },
     });
@@ -74,7 +74,7 @@ export class CropTypesService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const cropType = await this.prisma.cropType.findUnique({
       where: { id },
     });

@@ -3,21 +3,21 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class RecommendationResponseDto {
   @ApiProperty({
     description: 'ID da recomendação',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
-  id: number;
+  id: string;
 
   @ApiPropertyOptional({
     description: 'ID da fazenda',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
-  farmId?: number;
+  farmId?: string;
 
   @ApiPropertyOptional({
     description: 'ID do field/talhão',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
-  fieldId?: number;
+  fieldId?: string;
 
   @ApiPropertyOptional({
     description: 'Quem criou a recomendação',

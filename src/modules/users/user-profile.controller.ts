@@ -7,7 +7,6 @@ import {
   Param,
   UseGuards,
   Request,
-  ParseIntPipe,
   ForbiddenException,
 } from '@nestjs/common';
 import {
@@ -91,9 +90,7 @@ export class UserProfileController {
     type: UserResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  async findUser(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserResponseDto> {
+  async findUser(@Param('id') id: string): Promise<UserResponseDto> {
     // Buscar usuário mas retornar apenas dados públicos
     const user = await this.usersService.findOne(id);
 
@@ -122,7 +119,7 @@ export class UserProfileController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   async updateUser(
     @Request() req,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
     const currentUser = req.user;
@@ -164,7 +161,7 @@ export class UserProfileController {
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   async deleteUser(
     @Request() req,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
   ): Promise<{ message: string }> {
     const currentUser = req.user;
     const targetUser = await this.usersService.findOne(id);

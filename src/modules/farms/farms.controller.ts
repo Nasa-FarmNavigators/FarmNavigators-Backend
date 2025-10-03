@@ -10,7 +10,6 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -321,10 +320,7 @@ export class FarmsController {
       error: 'Forbidden',
     },
   })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: any,
-  ) {
+  async findOne(@Param('id') id: string, @CurrentUser() user: any) {
     const farm = await this.farmsService.findOne(id);
     return {
       success: true,
@@ -388,7 +384,7 @@ export class FarmsController {
     },
   })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateFarmDto: UpdateFarmDto,
     @CurrentUser() user: any,
   ) {
@@ -434,10 +430,7 @@ export class FarmsController {
       error: 'Forbidden',
     },
   })
-  async remove(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: any,
-  ) {
+  async remove(@Param('id') id: string, @CurrentUser() user: any) {
     await this.farmsService.remove(id);
     return {
       success: true,

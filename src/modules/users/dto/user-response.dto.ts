@@ -4,9 +4,9 @@ import { Role } from '@prisma/client';
 export class UserResponseDto {
   @ApiProperty({
     description: 'ID único do usuário',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
-  id: number;
+  id: string;
 
   @ApiProperty({
     description: 'Email do usuário',
@@ -50,10 +50,10 @@ export class UserResponseDto {
 
   @ApiProperty({
     description: 'ID da organização',
-    example: 1,
+    example: 'clxyz123abc456def789',
     required: false,
   })
-  organizationId?: number;
+  organizationId?: string;
 
   @ApiProperty({
     description: 'Data de criação',

@@ -15,18 +15,18 @@ export class FarmsService {
     return this.prisma.farm.findMany();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.prisma.farm.findUnique({ where: { id } });
   }
 
-  async update(id: number, updateFarmDto: any) {
+  async update(id: string, updateFarmDto: any) {
     return this.prisma.farm.update({
       where: { id },
       data: updateFarmDto,
     });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return this.prisma.farm.delete({ where: { id } });
   }
 }

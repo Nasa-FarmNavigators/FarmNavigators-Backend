@@ -127,14 +127,14 @@ export class AuthService {
   }
 
   async getProfile(userId: string) {
-    return await this.usersService.findOne(parseInt(userId));
+    return await this.usersService.findOne(userId);
   }
 
   async updateProfile(userId: string, updateData: UpdateUserDto) {
-    return await this.usersService.update(parseInt(userId), updateData);
+    return await this.usersService.update(userId, updateData);
   }
 
   async deleteProfile(userId: string) {
-    return await this.usersService.remove(parseInt(userId));
+    return await this.usersService.remove(userId);
   }
 }

@@ -59,7 +59,7 @@ enum Severity {
 }
 
 model User {
-  id                 Int               @id @default(autoincrement())
+  id                 String            @id @default(cuid())
   name               String
   email              String?           @unique
   phone              String?           @unique
@@ -68,7 +68,7 @@ model User {
   language           String            @default("pt")
   timezone           String?           @default("Africa/Luanda")
   organization       Organization?     @relation(fields: [organizationId], references: [id])
-  organizationId     Int?
+  organizationId     String?
   farms              Farm[]
   devices            Device[]
   notifications      Notification[]
@@ -84,7 +84,7 @@ model User {
 }
 
 model Organization {
-  id           Int      @id @default(autoincrement())
+  id           String      @id @default(cuid())
   name         String
   type         String?
   country      String?
@@ -98,12 +98,12 @@ model Organization {
 }
 
 model Farm {
-  id                    Int                    @id @default(autoincrement())
+  id                    String                 @id @default(cuid())
   name                  String
   owner                 User                   @relation(fields: [ownerId], references: [id])
-  ownerId               Int
+  ownerId               String
   organization          Organization?          @relation(fields: [organizationId], references: [id])
-  organizationId        Int?
+  organizationId        String?
   province              String?
   municipality          String?
   centroidLat           Float?
@@ -126,9 +126,9 @@ model Farm {
 }
 
 model Field {
-  id                    Int                    @id @default(autoincrement())
+  id                    String                 @id @default(cuid())
   farm                  Farm                   @relation(fields: [farmId], references: [id])
-  farmId                Int
+  farmId                String
   name                  String?
   centroidLat           Float?
   centroidLon           Float?
@@ -148,7 +148,7 @@ model Field {
 }
 
 model CropType {
-  id                Int             @id @default(autoincrement())
+  id                String            @id @default(cuid())
   name              String
   scientificName    String?
   description       String?
@@ -161,13 +161,13 @@ model CropType {
 }
 
 model PlantingEvent {
-  id              Int            @id @default(autoincrement())
+  id              String         @id @default(cuid())
   field           Field          @relation(fields: [fieldId], references: [id])
-  fieldId         Int
+  fieldId         String
   farm            Farm           @relation(fields: [farmId], references: [id])
-  farmId          Int
+  farmId          String
   crop            CropType       @relation(fields: [cropId], references: [id])
-  cropId          Int
+  cropId          String
   plantedAt       DateTime
   expectedYieldKg Float?
   actualYieldKg   Float?
@@ -184,11 +184,11 @@ model PlantingEvent {
 }
 
 model SatelliteObservation {
-  id           Int      @id @default(autoincrement())
+  id           String      @id @default(cuid())
   field        Field?   @relation(fields: [fieldId], references: [id])
-  fieldId      Int?
+  fieldId      String?
   farm         Farm?    @relation(fields: [farmId], references: [id])
-  farmId       Int?
+  farmId       String?
   timestamp    DateTime
   source       String
   bbox         Json? // GeoJSON bbox or polygon
@@ -208,11 +208,11 @@ model SatelliteObservation {
 }
 
 model WeatherObservation {
-  id              Int      @id @default(autoincrement())
+  id              String      @id @default(cuid())
   field           Field?   @relation(fields: [fieldId], references: [id])
-  fieldId         Int?
+  fieldId         String?
   farm            Farm?    @relation(fields: [farmId], references: [id])
-  farmId          Int?
+  farmId          String?
   timestamp       DateTime
   source          String
   precipitationMm Float?
@@ -229,13 +229,13 @@ model WeatherObservation {
 }
 
 model Recommendation {
-  id              Int      @id @default(autoincrement())
-  field           Field?   @relation(fields: [fieldId], references: [id])
-  fieldId         Int?
-  farm            Farm?    @relation(fields: [farmId], references: [id])
-  farmId          Int?
+  id              String      @id @default(cuid())
+  field           Field?      @relation(fields: [fieldId], references: [id])
+  fieldId         String?
+  farm            Farm?       @relation(fields: [farmId], references: [id])
+  farmId          String?
   createdBy       String? // "system" or user id
-  createdAt       DateTime @default(now())
+  createdAt       DateTime    @default(now())
   type            String // e.g., "PLANTING", "IRRIGATION", "PEST"
   title           String
   body            String
@@ -250,13 +250,13 @@ model Recommendation {
 }
 
 model MLModelResult {
-  id           Int      @id @default(autoincrement())
+  id           String      @id @default(cuid())
   modelName    String
   modelVersion String?
   input        Json
   output       Json
   field        Field?   @relation(fields: [fieldId], references: [id])
-  fieldId      Int?
+  fieldId      String?
   createdAt    DateTime @default(now())
 
   @@index([fieldId])
@@ -264,9 +264,9 @@ model MLModelResult {
 }
 
 model Device {
-  id        Int            @id @default(autoincrement())
+  id        String           @id @default(cuid())
   user      User           @relation(fields: [userId], references: [id])
-  userId    Int
+  userId    String
   platform  DevicePlatform
   pushToken String         @unique
   lastSeen  DateTime?
@@ -278,9 +278,9 @@ model Device {
 }
 
 model Notification {
-  id          Int                @id @default(autoincrement())
+  id          String             @id @default(cuid())
   user        User               @relation(fields: [userId], references: [id])
-  userId      Int
+  userId      String
   title       String
   body        String
   data        Json?
@@ -297,18 +297,18 @@ model Notification {
 }
 
 model USSDLog {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   phone     String
-  request   String   @db.Text
-  response  String   @db.Text
+  request   String      @db.Text
+  response  String      @db.Text
   status    String
-  createdAt DateTime @default(now())
+  createdAt DateTime    @default(now())
 
   @@map("ussd_logs")
 }
 
 model VideoContent {
-  id           Int               @id @default(autoincrement())
+  id           String               @id @default(cuid())
   title        String
   description  String?
   language     String            @default("pt")
@@ -317,7 +317,7 @@ model VideoContent {
   durationSec  Int?
   tags         Json?
   uploadedBy   User?             @relation("UserUploadedVideos", fields: [uploadedById], references: [id])
-  uploadedById Int?
+  uploadedById String?
   createdAt    DateTime          @default(now())
   engagements  VideoEngagement[]
 
@@ -325,11 +325,11 @@ model VideoContent {
 }
 
 model VideoEngagement {
-  id             Int          @id @default(autoincrement())
+  id             String          @id @default(cuid())
   user           User?        @relation(fields: [userId], references: [id])
-  userId         Int?
+  userId         String?
   video          VideoContent @relation(fields: [videoId], references: [id])
-  videoId        Int
+  videoId        String
   watchedAt      DateTime     @default(now())
   percentWatched Int?
 
@@ -339,11 +339,11 @@ model VideoEngagement {
 }
 
 model Alert {
-  id             Int       @id @default(autoincrement())
+  id             String       @id @default(cuid())
   farm           Farm?     @relation(fields: [farmId], references: [id])
-  farmId         Int?
+  farmId         String?
   field          Field?    @relation(fields: [fieldId], references: [id])
-  fieldId        Int?
+  fieldId        String?
   type           AlertType
   severity       Severity
   message        String
@@ -351,7 +351,7 @@ model Alert {
   createdAt      DateTime  @default(now())
   expiresAt      DateTime?
   acknowledgedBy User?     @relation("UserAcknowledgedAlerts", fields: [ackById], references: [id])
-  ackById        Int?
+  ackById        String?
   acknowledgedAt DateTime?
   metadata       Json?
 
@@ -363,7 +363,7 @@ model Alert {
 }
 
 model DataSource {
-  id          Int      @id @default(autoincrement())
+  id          String      @id @default(cuid())
   name        String
   provider    String?
   description String?
@@ -375,9 +375,9 @@ model DataSource {
 }
 
 model AuditLog {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(cuid())
   user      User?    @relation("UserAuditLogs", fields: [userId], references: [id])
-  userId    Int?
+  userId    String?
   action    String
   resource  String
   details   Json?
@@ -388,12 +388,12 @@ model AuditLog {
 }
 
 model Setting {
-  id          Int      @id @default(autoincrement())
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int      @unique
+  id          String      @id @default(cuid())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String      @unique
   preferences Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@map("settings")
 }

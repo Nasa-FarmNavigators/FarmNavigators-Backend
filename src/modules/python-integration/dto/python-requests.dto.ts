@@ -5,6 +5,7 @@ import {
   IsInt,
   IsDateString,
   IsArray,
+  IsString,
 } from 'class-validator';
 
 export class WeatherRequestDto {
@@ -44,16 +45,16 @@ export class RecommendationRequestDto {
     description: 'ID da fazenda',
     example: 1,
   })
-  @IsInt({ message: 'Farm ID deve ser um número inteiro' })
-  farmId: number;
+  @IsString({ message: 'Farm ID deve ser um número inteiro' })
+  farmId: string;
 
   @ApiPropertyOptional({
     description: 'ID do field específico (opcional)',
     example: 1,
   })
   @IsOptional()
-  @IsInt({ message: 'Field ID deve ser um número inteiro' })
-  fieldId?: number;
+  @IsString({ message: 'Field ID deve ser um número inteiro' })
+  fieldId?: string;
 
   @ApiPropertyOptional({
     description: 'Tipo de recomendação solicitada',
@@ -68,15 +69,15 @@ export class CropSimulationRequestDto {
     description: 'ID da fazenda',
     example: 1,
   })
-  @IsInt({ message: 'Farm ID deve ser um número inteiro' })
-  farmId: number;
+  @IsString({ message: 'Farm ID deve ser um número inteiro' })
+  farmId: string;
 
   @ApiProperty({
     description: 'ID do tipo de cultura',
     example: 1,
   })
-  @IsInt({ message: 'Crop Type ID deve ser um número inteiro' })
-  cropTypeId: number;
+  @IsString({ message: 'Crop Type ID deve ser um número inteiro' })
+  cropTypeId: string;
 
   @ApiPropertyOptional({
     description: 'Área plantada em hectares',

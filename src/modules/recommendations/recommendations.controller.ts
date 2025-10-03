@@ -74,9 +74,7 @@ export class RecommendationsController {
     @Query('farmId') farmId?: string,
     @Query('fieldId') fieldId?: string,
   ) {
-    const farmIdNum = farmId ? parseInt(farmId) : undefined;
-    const fieldIdNum = fieldId ? parseInt(fieldId) : undefined;
-    return this.recommendationsService.findAll(farmIdNum, fieldIdNum);
+    return this.recommendationsService.findAll(farmId, fieldId);
   }
 
   @Get(':id')
@@ -93,7 +91,7 @@ export class RecommendationsController {
     status: 404,
     description: 'Recomendação não encontrada',
   })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id') id: string) {
     return this.recommendationsService.findOne(id);
   }
 
@@ -113,7 +111,7 @@ export class RecommendationsController {
     description: 'Recomendação não encontrada',
   })
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateRecommendationDto: UpdateRecommendationDto,
   ) {
     return this.recommendationsService.update(id, updateRecommendationDto);
@@ -134,7 +132,7 @@ export class RecommendationsController {
     status: 404,
     description: 'Recomendação não encontrada',
   })
-  markAsActioned(@Param('id', ParseIntPipe) id: number) {
+  markAsActioned(@Param('id') id: string) {
     return this.recommendationsService.markAsActioned(id);
   }
 
@@ -152,7 +150,7 @@ export class RecommendationsController {
     status: 404,
     description: 'Recomendação não encontrada',
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') id: string) {
     return this.recommendationsService.remove(id);
   }
 }

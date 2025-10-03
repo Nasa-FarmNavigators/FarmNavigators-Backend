@@ -3,7 +3,6 @@ import {
   IsString,
   IsOptional,
   IsNumber,
-  IsInt,
   IsBoolean,
   Min,
   Max,
@@ -12,19 +11,19 @@ import {
 export class CreateRecommendationDto {
   @ApiPropertyOptional({
     description: 'ID da fazenda (se aplicável)',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
   @IsOptional()
-  @IsInt({ message: 'Farm ID deve ser um número inteiro' })
-  farmId?: number;
+  @IsString({ message: 'Farm ID deve ser uma string' })
+  farmId?: string;
 
   @ApiPropertyOptional({
     description: 'ID do field/talhão (se aplicável)',
-    example: 1,
+    example: 'clxyz123abc456def789',
   })
   @IsOptional()
-  @IsInt({ message: 'Field ID deve ser um número inteiro' })
-  fieldId?: number;
+  @IsString({ message: 'Field ID deve ser uma string' })
+  fieldId?: string;
 
   @ApiPropertyOptional({
     description: 'Quem/o que criou a recomendação',
