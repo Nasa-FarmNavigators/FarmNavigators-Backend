@@ -1,0 +1,21 @@
+# Ignorar dependências locais
+node_modules
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Ignorar artefactos de build
+dist
+.cache
+
+# Configurações e ficheiros locais
+.env
+*.local
+.vscode
+.idea
+.DS_Store
+
+# Git e CI
+.git
+.gitignore
+.github
