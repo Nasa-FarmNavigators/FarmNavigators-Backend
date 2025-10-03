@@ -1,0 +1,54 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: ./FarmNavigators-Backend
+
+      - name: Run build
+        run: npm run build
+        working-directory: ./FarmNavigators-Backend
+
+      - name: Run tests
+        run: npm run test -- --passWithNoTests
+        working-directory: ./FarmNavigators-Backend
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./FarmNavigators-Backend
+          file: ./FarmNavigators-Backend/Dockerfile
+          push: true
+          tags: your-dockerhub-user/farmnav-node:latest
