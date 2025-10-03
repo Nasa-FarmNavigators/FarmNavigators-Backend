@@ -48,4 +48,4 @@ jobs:
           context: ./FarmNavigators-Backend
           file: ./FarmNavigators-Backend/Dockerfile
           push: true
-          tags: your-dockerhub-user/farmnav-node:latest
+          tags: pgaspar0/farmnav-node:latest
