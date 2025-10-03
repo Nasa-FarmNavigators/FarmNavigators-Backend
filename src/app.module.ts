@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
+import { PrismaService } from './common/prisma.service';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FarmsModule } from './modules/farms/farms.module';
@@ -25,6 +26,6 @@ import { RecommendationsModule } from './modules/recommendations/recommendations
     RecommendationsModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [PrismaService],
 })
 export class AppModule {}
