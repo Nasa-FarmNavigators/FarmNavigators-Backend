@@ -45,7 +45,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./FarmNavigators-Backend
-          file: ./FarmNavigators-Backend/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           tags: pgaspar0/farmnav-node:latest
