@@ -10,6 +10,7 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { PythonIntegrationModule } from './modules/python-integration/python-integration.module';
 import { CropTypesModule } from './modules/crop-types/crop-types.module';
 import { RecommendationsModule } from './modules/recommendations/recommendations.module';
+import { UssdModule } from './ussd/ussd.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RecommendationsModule } from './modules/recommendations/recommendations
     PythonIntegrationModule,
     CropTypesModule,
     RecommendationsModule,
+    UssdModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],
